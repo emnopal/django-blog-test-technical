@@ -1,0 +1,25 @@
+version: "3.9"
+
+services:
+
+  blog_db:
+    image: postgres:14-alpine
+    restart: always
+    volumes:
+      - postgres_data_blog_db:/var/lib/postgresql/data/
+    environment:
+      - "POSTGRES_HOST_AUTH_METHOD=trust"
+
+  blog_web:
+    build: .
+    ports:
+      - "8044:8000"
+    restart: always
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    depends_on:
+      - blog_db
+
+volumes:
+  postgres_data_blog_db:

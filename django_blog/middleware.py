@@ -1,0 +1,17 @@
+import pytz
+import requests
+
+from django.utils import timezone
+
+class TimezoneMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+
+        tzname = 'Asia/Jakarta'
+        if tzname:
+            timezone.activate(pytz.timezone(tzname))
+        else:
+            timezone.deactivate()
+        return self.get_response(request)
