@@ -52,23 +52,10 @@
 							</li>
 							{% endif %}
 						</ul>
-						<form class="d-flex">
-							<input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-							<button class="btn btn-light" type="submit">Search</button>
-						</form>
 						{% if user.is_authenticated %}
-						<li class="nav-item">
-							<a class="nav-link" href="{% url 'logout' %}">Logout</a>
-						</li>
+						<a class="nav-link" href="{% url 'logout' %}">Logout</a>
 						{% endif %}
 					</div>
-					{% if user.is_authenticated %}
-					<ul>
-						<li class="nav-item">
-							<img class="w-8 h-8 md:h-auto rounded-full mx-auto" width="32" height="32" src="{{ user.profile.image.url }}">
-						</li>
-					</ul>
-					{% endif %}
 				</div>
 			</nav>
 		</header>
