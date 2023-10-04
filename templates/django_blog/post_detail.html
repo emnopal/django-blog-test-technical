@@ -2,7 +2,7 @@
 <div class="container">
 	<article class="media content-section box-content h-50 w-50 p-5 border-1">
 		<div class="media-body">
-			<div cla ss="article-metadata">
+			<div class="article-metadata">
 				<h1 class="display-6"><strong>{{ post.title }}</strong></h1>
 				<div>
 					<span>Author: </span>
@@ -13,7 +13,7 @@
 					>
 				</div>
 				<small class="text-muted"
-					>Posted on: {{ post.updated_on|date:"F d, Y" }}</small
+					>Posted on: {{ post.updated_on|date:"D, d F Y g:i:s" }}</small
 				>
 				{% if post.author == user %}
 				<div>

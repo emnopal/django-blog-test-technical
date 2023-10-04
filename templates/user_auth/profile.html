@@ -2,28 +2,58 @@
 <div class="container">
 	<div class="content-section">
 		<div class="media">
-			<img
-				class="w-32 h-32 md:h-auto rounded-full"
-				src="{{ user.profile.image.url }}"
-			/>
-			<div class="media-body">
-				<h2 class="account-heading">Username: {{ user.username }}</h2>
-				<p class="text-secondary">Email: {{ user.email }}</p>
-			</div>
-		</div>
-		<!-- FORM GOES HERE -->
+			<div style="padding-top:10px">
+				<img src="{{ user.profile.image.url }}" width="64" height="64" />
+				{{ user.username }} ({{ user.email }})
+			</div><br/>
+			Followers: {{number_of_followers}}
+		</div><br/>
 		<form method="POST" enctype="multipart/form-data">
 			{% csrf_token %}
 			<fieldset class="form-group">
 				<legend class="border-botton">Profile Info</legend>
 				{{ u_form|crispy }} {{ p_form|crispy }}
 			</fieldset>
-			<div class="form-group mb-4">
+			<div class="form-group mb-4" style="padding-top:5px;">
 				<button class="btn btn-outline-info" type="submit">
 					Update
 				</button>
 			</div>
 		</form>
+			<h2>List Posts: </h2>
+				<div class="container">
+					<div class="row">
+						<!-- Blog Entries Column -->
+						<div class="col-md-8 mt-3 left">
+							{% for post in post_list %}
+							<div class="card mb-4">
+								<div class="card-body">
+									<h2 class="card-title">{{ post.title }}</h2>
+									{% if post.status == 1 %}
+									<p class="card-text text-muted h6">Status: Published </p>
+									{% else %}
+									<p class="card-text text-muted h6">Status: Unpublished </p>
+									{% endif %}
+									<p class="card-text text-muted h6">{{ post.author }} | {{ post.created_on|date:"D, d F Y H:i:s" }} </p>
+									<p class="card-text">{{post.content|safe|slice:":100" }}</p>
+									<a href="{% url 'post_detail' post.id  %}" class="btn btn-primary">Read More &rarr;</a>
+								</div>
+							</div>
+							{% endfor %}
+							<nav aria-label="Page navigation conatiner"></nav>
+							<ul class="pagination justify-content-center">
+								{% if post_list.has_previous %}
+								<li class="page-item"><a href="?page={{ post_list.previous_page_number }}" class="page-link"> {{ post_list.previous_page_number }} &laquo; PREV</a></li>
+								{% endif %}
+								<span style="padding-top:7px">&nbsp;&nbsp;Page {{ post_list.number }} of {{ post_list.paginator.num_pages }}.&nbsp;&nbsp;</span>
+								{% if post_list.has_next %}
+								<li class="page-item"><a href="?page={{ post_list.next_page_number }}" class="page-link">NEXT &raquo; {{ post_list.next_page_number }} </a></li>
+								{% endif %}
+							</ul>
+							</nav>
+						</div>
+					</div>
+				</div>
 	</div>
 </div>
 {% endblock content %}
