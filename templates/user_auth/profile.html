@@ -6,7 +6,7 @@
 				<img src="{{ user.profile.image.url }}" width="64" height="64" />
 				{{ user.username }} ({{ user.email }})
 			</div><br/>
-			Followers: {{number_of_followers}}
+			Followers: {{number_of_followers}}&nbsp;&nbsp;Following: {{number_of_following}}
 		</div><br/>
 		<form method="POST" enctype="multipart/form-data">
 			{% csrf_token %}

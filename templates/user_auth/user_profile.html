@@ -7,8 +7,7 @@
 					<img src="{{ user.profile.image.url }}" width="64" height="64" />
 					{{ profile.user.username }} ({{ profile.user.email }})
 				</div><br/>
-				Followers: {{number_of_followers}}
-
+				Followers: {{number_of_followers}}&nbsp;&nbsp;Following: {{number_of_following}}
 				{% if profile.user.username != user_login.user.username %}
 					{% if is_following %}
 					<form method="POST" action="{% url 'remove-follower' profile.user.id %}">

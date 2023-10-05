@@ -71,6 +71,7 @@ class CurrentProfileDetailView(AuthDetailViewAbstraction):
             'post_list': posts,
             'is_following': is_following,
             'number_of_followers': self.number_of_followers(user),
+            'number_of_following': self.number_of_following(user),
             'paginator': paginator,
             'is_paginated': True,
         }
@@ -105,6 +106,7 @@ class ProfileDetailView(AuthDetailViewAbstraction):
             'post_list': posts,
             'is_following': is_following,
             'number_of_followers': self.number_of_followers(user),
+            'number_of_following': self.number_of_following(user),
             'paginator': paginator,
             'is_paginated': True,
         }
