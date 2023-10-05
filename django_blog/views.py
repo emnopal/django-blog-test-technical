@@ -1,18 +1,24 @@
 import datetime
-from django.core.paginator import Paginator
 from django.shortcuts import redirect, render
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db import connection
+from django.contrib.auth.mixins import UserPassesTestMixin
 
 from user_auth.models import Profile
 from .models import Post
-from django_summernote.widgets import SummernoteInplaceWidget, SummernoteWidget
+from django_summernote.widgets import SummernoteWidget
 from .forms import CommentForm
 from django.shortcuts import render, get_object_or_404
+from user_auth.abstract import (
+    AuthUserAbstraction,
+    AuthViewAbstraction,
+    AuthCreateViewAbstraction,
+    AuthDeleteViewAbstraction,
+    AuthDetailViewAbstraction,
+    AuthListViewAbstraction,
+    AuthUpdateViewAbstraction,
+)
 
 
-class PostListView(LoginRequiredMixin, ListView):
+class PostListView(AuthListViewAbstraction):
     template_name = "django_blog/post_list.html"
     context_object_name = 'post_list'
     paginate_by = 5
@@ -20,21 +26,8 @@ class PostListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         profile = Profile.objects.get(user_id=self.request.user)
         user = profile.user
-        list_following_username = [user]
-        with connection.cursor() as cursor:
-            cursor.execute("""
-                SELECT
-                    p.user_id user
-                FROM user_auth_profile p
-                JOIN user_auth_profile_followers pf ON p.id = pf.profile_id
-                JOIN auth_user a on p.user_id = a.id
-                WHERE pf.user_id = %s
-            """, [self.request.user.id])
-            row = cursor.fetchone()
-            if row:
-                for r in row:
-                    following_profile = Profile.objects.get(user_id=r)
-                    list_following_username.append(following_profile.user)
+        list_following_username = self.get_following()
+        list_following_username.append(user)
 
         posts = Post.objects.filter(author__in=list_following_username).order_by('-created_on')
         return posts
@@ -66,7 +59,7 @@ def post_detail(request, pk):
     return render(request, template_name, values)
 
 
-class PostCreateView(LoginRequiredMixin, CreateView):
+class PostCreateView(AuthCreateViewAbstraction):
     model = Post
     fields = ["title", "content", "status"]
 
@@ -86,7 +79,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         return context
 
 
-class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class PostUpdateView(UserPassesTestMixin, AuthUpdateViewAbstraction):
     model = Post
     fields = ["title", "content", "status"]
 
@@ -113,7 +106,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return context
 
 
-class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class PostDeleteView(UserPassesTestMixin, AuthDeleteViewAbstraction):
     model = Post
     success_url = "/"
 

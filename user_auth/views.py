@@ -1,18 +1,18 @@
-from multiprocessing import context
 from django.core.paginator import Paginator
-from django.http import Http404
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.views import View
-from django.db import connection
-
 from django_blog.models import Post
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.contrib.auth.decorators import login_required
 from .models import Profile
-from django.contrib.auth.models import User
+from .abstract import (
+    AuthUserAbstraction,
+    AuthViewAbstraction,
+    AuthCreateViewAbstraction,
+    AuthDeleteViewAbstraction,
+    AuthDetailViewAbstraction,
+    AuthListViewAbstraction,
+    AuthUpdateViewAbstraction,
+)
 
 
 def register(request):
@@ -29,7 +29,7 @@ def register(request):
     return render(request, 'user_auth/register.html', {'form': form})
 
 
-class CurrentProfileDetailView(LoginRequiredMixin, DetailView):
+class CurrentProfileDetailView(AuthDetailViewAbstraction):
     model = Profile
     template_name = 'user_auth/profile.html'
 
@@ -50,7 +50,6 @@ class CurrentProfileDetailView(LoginRequiredMixin, DetailView):
                 break
             else:
                 is_following = False
-        number_of_followers = len(followers)
 
         if request.method == 'POST':
             u_form = UserUpdateForm(request.POST, instance=request.user)
@@ -71,13 +70,13 @@ class CurrentProfileDetailView(LoginRequiredMixin, DetailView):
             'user_login': request,
             'post_list': posts,
             'is_following': is_following,
-            'number_of_followers': number_of_followers,
+            'number_of_followers': self.number_of_followers(user),
             'paginator': paginator,
             'is_paginated': True,
         }
         return render(request, 'user_auth/profile.html', context)
 
-class ProfileDetailView(LoginRequiredMixin, DetailView):
+class ProfileDetailView(AuthDetailViewAbstraction):
     model = Profile
     template_name = 'user_auth/user_profile.html'
 
@@ -98,7 +97,6 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
                 break
             else:
                 is_following = False
-        number_of_followers = len(followers)
 
         context = {
             'user': user,
@@ -106,38 +104,20 @@ class ProfileDetailView(LoginRequiredMixin, DetailView):
             'user_login': request,
             'post_list': posts,
             'is_following': is_following,
-            'number_of_followers': number_of_followers,
+            'number_of_followers': self.number_of_followers(user),
             'paginator': paginator,
             'is_paginated': True,
         }
         return render(request, 'user_auth/user_profile.html', context)
 
-class AddFollower(LoginRequiredMixin, View):
+class AddFollower(AuthViewAbstraction):
     def post(self, request, user_id, *args, **kwargs):
         profile = Profile.objects.get(user_id=user_id)
         profile.followers.add(request.user)
         return redirect('account_detail', user_id=user_id)
 
-class RemoveFollower(LoginRequiredMixin, View):
+class RemoveFollower(AuthViewAbstraction):
     def post(self, request, user_id, *args, **kwargs):
         profile = Profile.objects.get(user_id=user_id)
         profile.followers.remove(request.user)
         return redirect('account_detail', user_id=user_id)
-
-
-# @login_required
-# def follow_user(request, username):
-#     user_to_follow = User.objects.get(username=username)
-#     request.user.following.add(Follower(following=user_to_follow))
-#     return redirect('account_detail', user_id=user_to_follow.id)
-
-# @login_required
-# def unfollow_user(request, username):
-#     user_to_unfollow = User.objects.get(username=username)
-
-#     follower_instance = Follower.objects.filter(following=user_to_unfollow).first()
-
-#     if follower_instance:
-#         follower_instance.delete()
-
-#     return redirect('account_detail', user_id=user_to_unfollow.id)
