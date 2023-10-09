@@ -33,8 +33,8 @@ urlpatterns = [
     re_path(r'^accounts/profile/?$', user_views.CurrentProfileDetailView.as_view(), name='profile'),
     path('profile', user_views.CurrentProfileDetailView.as_view(), name='profile'),
 
-    path('accounts/profile/<int:user_id>', user_views.ProfileDetailView.as_view(), name='account_detail'),
-    path('profile/<int:user_id>', user_views.ProfileDetailView.as_view(), name='account_detail'),
+    path('accounts/profile/<str:username>', user_views.ProfileDetailView.as_view(), name='account_detail'),
+    path('profile/<str:username>', user_views.ProfileDetailView.as_view(), name='account_detail'),
 
     path('profile/<int:user_id>/followers/add', user_views.AddFollower.as_view(), name='add-follower'),
     path('profile/<int:user_id>/followers/remove', user_views.RemoveFollower.as_view(), name='remove-follower'),

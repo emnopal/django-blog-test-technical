@@ -81,8 +81,8 @@ class ProfileDetailView(AuthDetailViewAbstraction):
     model = Profile
     template_name = 'user_auth/user_profile.html'
 
-    def get(self, request, user_id, *args, **kwargs):
-        profile = Profile.objects.get(user_id=user_id)
+    def get(self, request, username, *args, **kwargs):
+        profile = Profile.objects.get(user__username=username)
         user = profile.user
         posts = Post.objects.filter(author=user, status=1).order_by('-created_on')
         if profile.user.username == request.user.username:
@@ -118,10 +118,10 @@ class AddFollower(AuthViewAbstraction):
     def post(self, request, user_id, *args, **kwargs):
         profile = Profile.objects.get(user_id=user_id)
         profile.followers.add(request.user)
-        return redirect('account_detail', user_id=user_id)
+        return redirect('account_detail', username=profile.user.username)
 
 class RemoveFollower(AuthViewAbstraction):
     def post(self, request, user_id, *args, **kwargs):
         profile = Profile.objects.get(user_id=user_id)
         profile.followers.remove(request.user)
-        return redirect('account_detail', user_id=user_id)
+        return redirect('account_detail', username=profile.user.username)
