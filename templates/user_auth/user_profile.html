@@ -22,7 +22,7 @@
 					{% endif %}
 				{% endif %}
 
-				{% if is_following %}
+				{% if is_following or profile.user.username == user_login.user.username %}
 					{% if post_list %}
 						<div class="container">
 							<div class="row">
