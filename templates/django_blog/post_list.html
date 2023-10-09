@@ -26,7 +26,13 @@
                     <div class="card mb-4">
                         <div class="card-body">
                             <h2 class="card-title">{{ post.title }}</h2>
-                            <p class="card-text text-muted h6">{{ post.author }} | {{ post.created_on|date:"D, d F Y H:i:s" }} </p>
+                            <p class="card-text text-muted h6">by: <a
+                                class="font-weight-bold mr-2"
+                                href="{% url 'account_detail' post.author.username %}"
+                                >{{ post.author }}</a
+                            ></p>
+                            <p class="card-text text-muted h6">Created on: {{ post.created_on|date:"D, d F Y H:i:s" }} </p>
+                            <p class="card-text text-muted h6">Updated on: {{ post.updated_on|date:"D, d F Y H:i:s" }} </p>
                             <p class="card-text">{{post.content|safe|slice:":100" }}</p>
                             <a href="{% url 'post_detail' post.id  %}" class="btn btn-primary">Read More &rarr;</a>
                         </div>

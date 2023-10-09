@@ -13,7 +13,10 @@
 					>
 				</div>
 				<small class="text-muted"
-					>Posted on: {{ post.updated_on|date:"D, d F Y g:i:s" }}</small
+					>Created on: &nbsp;{{ post.created_on|date:"D, d F Y H:i:s" }}</small
+				><br/>
+				<small class="text-muted"
+					>Updated on: &nbsp;{{ post.updated_on|date:"D, d F Y H:i:s" }}</small
 				>
 				{% if post.author == user %}
 				<div>
