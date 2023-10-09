@@ -85,6 +85,8 @@ class ProfileDetailView(AuthDetailViewAbstraction):
         profile = Profile.objects.get(user_id=user_id)
         user = profile.user
         posts = Post.objects.filter(author=user, status=1).order_by('-created_on')
+        if profile.user.username == request.user.username:
+            posts = Post.objects.filter(author=user).order_by('-created_on')
 
         paginator = Paginator(posts, 5)
         page_number = request.GET.get('page')
