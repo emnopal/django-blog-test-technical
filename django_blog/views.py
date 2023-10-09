@@ -29,7 +29,7 @@ class PostListView(AuthListViewAbstraction):
         list_following_username = self.get_following()
         list_following_username.append(user)
 
-        posts = Post.objects.filter(author__in=list_following_username).order_by('-created_on')
+        posts = Post.objects.filter(author__in=list_following_username, status=1).order_by('-created_on')
         return posts
 
     def get_context_data(self, **kwargs):
