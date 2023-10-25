@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import connection
 from django.views import View
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, RedirectView
 
 from .models import Profile
 
@@ -92,3 +92,6 @@ class AuthCreateViewAbstraction(AuthUserAbstraction, CreateView):...
 
 
 class AuthDeleteViewAbstraction(AuthUserAbstraction, DeleteView):...
+
+
+class AuthRedirectViewAbstraction(AuthUserAbstraction, RedirectView):...

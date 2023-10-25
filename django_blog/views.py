@@ -1,6 +1,7 @@
 import datetime
 from django.shortcuts import redirect, render
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.urls import reverse_lazy
 
 from user_auth.models import Profile
 from .models import Post
@@ -8,14 +9,14 @@ from django_summernote.widgets import SummernoteWidget
 from .forms import CommentForm
 from django.shortcuts import render, get_object_or_404
 from user_auth.abstract import (
-    AuthUserAbstraction,
-    AuthViewAbstraction,
     AuthCreateViewAbstraction,
     AuthDeleteViewAbstraction,
     AuthDetailViewAbstraction,
     AuthListViewAbstraction,
     AuthUpdateViewAbstraction,
+    AuthRedirectViewAbstraction,
 )
+from django.contrib.auth.decorators import login_required
 
 
 class PostListView(AuthListViewAbstraction):
@@ -38,25 +39,36 @@ class PostListView(AuthListViewAbstraction):
         context['user_login'] = user_login
         return context
 
-def post_list_view_redirect(request):
-    return redirect('post_list')
 
-def post_detail(request, pk):
+class PostListViewRedirect(AuthRedirectViewAbstraction):
+    url = reverse_lazy('post_list')
+
+
+class PostDetailView(AuthDetailViewAbstraction):
     template_name = "django_blog/post_detail.html"
-    post = get_object_or_404(Post, pk=pk)
-    user_login = get_object_or_404(Profile, user_id=request.user)
-    comments = post.comments.filter(post_id=pk)
-    new_comment = None  # Comment posted
-    if request.method == "POST":
-        comment_form = CommentForm(data=request.POST)
-        new_comment = comment_form.save(commit=False)
-        new_comment.post = post
-        new_comment.save()
-        return redirect('post_detail', pk=pk)
-    else:
+
+    def get(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        user_login = get_object_or_404(Profile, user_id=request.user)
+        comments = post.comments.filter(post_id=pk)
+        new_comment = None  # Comment posted
         comment_form = CommentForm()
-    values = {"post": post, "comments": comments, "new_comment": new_comment, "comment_form": comment_form, "user_login": user_login}
-    return render(request, template_name, values)
+        context = {"post": post, "comments": comments, "new_comment": new_comment, "comment_form": comment_form, "user_login": user_login}
+        return render(request, self.template_name, context)
+
+    def post(self, request, pk):
+        post = get_object_or_404(Post, pk=pk)
+        user_login = get_object_or_404(Profile, user_id=request.user)
+        comments = post.comments.filter(post_id=pk)
+        comment_form = CommentForm(request.POST)
+        new_comment = None  # Comment posted
+        if comment_form.is_valid():
+            new_comment = comment_form.save(commit=False)
+            new_comment.post = post
+            new_comment.save()
+            return redirect('post_detail', pk=pk)
+        context = {"post": post, "comments": comments, "new_comment": new_comment, "comment_form": comment_form, "user_login": user_login}
+        return render(request, self.template_name, context)
 
 
 class PostCreateView(AuthCreateViewAbstraction):
@@ -123,5 +135,6 @@ class PostDeleteView(UserPassesTestMixin, AuthDeleteViewAbstraction):
         return context
 
 
+@login_required
 def about(request):
     return render(request, "django_blog/about.html", {"title": "About"})

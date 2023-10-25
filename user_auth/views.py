@@ -1,32 +1,30 @@
 from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from django.views import View
 from django_blog.models import Post
 from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
 from .models import Profile
 from .abstract import (
-    AuthUserAbstraction,
     AuthViewAbstraction,
-    AuthCreateViewAbstraction,
-    AuthDeleteViewAbstraction,
     AuthDetailViewAbstraction,
-    AuthListViewAbstraction,
-    AuthUpdateViewAbstraction,
 )
 
 
-def register(request):
-    if request.method == 'POST':
+class RegisterView(View):
+    template_name = "user_auth/register.html"
+
+    def get(self, request):
+        form = UserRegisterForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
         form = UserRegisterForm(request.POST)
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
-            messages.success(
-                request, f'Hi {username}! Your account has been created! Now login!')
+            messages.success(request, f'Hi {username}! Your account has been created! Now login!')
             return redirect('login')
-    else:
-        form = UserRegisterForm()
-    return render(request, 'user_auth/register.html', {'form': form})
 
 
 class CurrentProfileDetailView(AuthDetailViewAbstraction):
@@ -77,6 +75,7 @@ class CurrentProfileDetailView(AuthDetailViewAbstraction):
         }
         return render(request, 'user_auth/profile.html', context)
 
+
 class ProfileDetailView(AuthDetailViewAbstraction):
     model = Profile
     template_name = 'user_auth/user_profile.html'
@@ -114,11 +113,13 @@ class ProfileDetailView(AuthDetailViewAbstraction):
         }
         return render(request, 'user_auth/user_profile.html', context)
 
+
 class AddFollower(AuthViewAbstraction):
     def post(self, request, user_id, *args, **kwargs):
         profile = Profile.objects.get(user_id=user_id)
         profile.followers.add(request.user)
         return redirect('account_detail', username=profile.user.username)
+
 
 class RemoveFollower(AuthViewAbstraction):
     def post(self, request, user_id, *args, **kwargs):

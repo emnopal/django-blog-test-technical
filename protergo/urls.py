@@ -17,30 +17,13 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include, re_path
-from user_auth import views as user_views
-from django.contrib.auth import views as auth_views
+from django.urls import path, include
 
 urlpatterns = [
-    path('register', user_views.register, name='register'),
-
-    path('login', auth_views.LoginView.as_view(template_name="user_auth/login.html"), name='login'),
-    re_path(r'accounts/login/?$', auth_views.LoginView.as_view(template_name="user_auth/login.html"), name='login'),
-
-    path('logout', auth_views.LogoutView.as_view(template_name="user_auth/logout.html"), name='logout'),
-    path('accounts/logout', auth_views.LogoutView.as_view(template_name="user_auth/logout.html"), name='logout'),
-
-    re_path(r'^accounts/profile/?$', user_views.CurrentProfileDetailView.as_view(), name='profile'),
-    path('profile', user_views.CurrentProfileDetailView.as_view(), name='profile'),
-
-    path('accounts/profile/<str:username>', user_views.ProfileDetailView.as_view(), name='account_detail'),
-    path('profile/<str:username>', user_views.ProfileDetailView.as_view(), name='account_detail'),
-
-    path('profile/<int:user_id>/followers/add', user_views.AddFollower.as_view(), name='add-follower'),
-    path('profile/<int:user_id>/followers/remove', user_views.RemoveFollower.as_view(), name='remove-follower'),
     path('summernote', include('django_summernote.urls')),
     path('admin/', admin.site.urls),
     path('', include('django_blog.urls')),
+    path('', include('user_auth.urls')),
 ]
 
 if settings.DEBUG:
