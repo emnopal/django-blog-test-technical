@@ -6,8 +6,12 @@ services:
     restart: always
     volumes:
       - postgres_data_blog_db:/var/lib/postgresql/data/
+    env_file: .env
     environment:
-      - 'POSTGRES_HOST_AUTH_METHOD=trust'
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_USER=${DJANGO_DATABASE_USER}
+      - POSTGRES_DB=${DJANGO_DATABASE_NAME}
+      - POSTGRES_PASSWORD=${DJANGO_DATABASE_PASSWORD}
 
   blog_web:
     build: .
