@@ -1,19 +1,24 @@
 {% extends "base.html" %}
 {% block content %}
 {% for post in posts %}
-<div class="container">
-	<article class="media content-section box-content h-50 w-50 p-5 border-1">
-		<img class="w-10 h-10 md:h-auto rounded-full" src="{{ post.author.profile.image.url }}">
-		<div class="media-body">
-			<div class="article-metadata">
-				<a class="font-weight-bold mr-2" href="#">{{ post.author }}</a>
-				<small class="text-muted">{{ post.date_posted}}</small>
-			</div>
-			<h1 class="display-6" href="#"><strong><a>{{ post.title }}</a></strong></h1>
-			<br></br>
-			<p>{{ post.content }}
-		</div>
-	</article>
+<div class="container mt-4">
+    <div class="row">
+        {% for post in posts %}
+        <div class="col-md-8 offset-md-2 mb-4">
+            <article class="media content-section box-content p-4 border rounded">
+                <img class="rounded-circle author-image" src="{{ post.author.profile.image.url }}">
+                <div class="media-body ml-3">
+                    <div class="article-metadata">
+                        <a class="font-weight-bold author-name" href="#">{{ post.author }}</a>
+                        <small class="text-muted">{{ post.date_posted }}</small>
+                    </div>
+                    <h1 class="display-6"><a href="#"><strong>{{ post.title }}</strong></a></h1>
+                    <p class="post-content">{{ post.content }}</p>
+                </div>
+            </article>
+        </div>
+        {% endfor %}
+    </div>
 </div>
 {% endfor %}
 {% endblock content %}

@@ -16,9 +16,6 @@ from pathlib import Path
 from dotenv import load_dotenv
 import os
 
-from django.conf import settings
-from django.conf.urls.static import static
-
 load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -31,9 +28,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if os.getenv('DJANGO_ENVIRONMENT') == 'development' else False
 
-ALLOWED_HOSTS = []
+# SECURITY WARNING: fill the list in production!
+ALLOWED_HOSTS = [] if os.getenv('DJANGO_ENVIRONMENT') == 'development' else []
 
 
 # Application definition
@@ -84,6 +82,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'protergo.wsgi.application'
 
+# added support to asgi application
+# see here: https://docs.djangoproject.com/en/4.2/howto/deployment/asgi/uvicorn/
+ASGI_APPLICATION = 'protergo.asgi.application'
+
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -121,9 +123,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = os.getenv('DJANGO_LOCALE')
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = os.getenv('DJANGO_TIMEZONE')
 
 USE_I18N = True
 
@@ -133,7 +135,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = '/static/'#Location of static files
+STATIC_URL = '/static/' # Location of static files
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]

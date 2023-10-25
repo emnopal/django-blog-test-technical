@@ -1,13 +1,13 @@
-/* body {
-	background: #ffffff;
-	color: #807d7f;
-	margin-top: 5rem;
+body {
+	font-family: 'Roboto', sans-serif;
+	font-size: 18px;
+	background-color: #fdfdfd;
 }
 
-.content-section {
-	background: #ffffff;
-	padding: 10px 20px;
-	border: 1px solid #e0e0e1;
-	border-radius: 1px;
-	margin-bottom: 2px;
-} */
+.head_text {
+	color: white;
+}
+
+.card {
+	box-shadow: 0 16px 48px #e3e7eb;
+}

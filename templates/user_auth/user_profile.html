@@ -1,70 +1,96 @@
 {% extends "base.html" %} {% block content %}
-<div class="container">
-	<div class="content-section">
-		<div class="media">
-			<div class="media-body">
-				<div style="padding-top:10px">
-					<img src="{{ user.profile.image.url }}" width="64" height="64" />
-					{{ profile.user.username }} ({{ profile.user.email }})
-				</div><br/>
-				Followers: {{number_of_followers}}&nbsp;&nbsp;Following: {{number_of_following}}
-				{% if profile.user.username != user_login.user.username %}
-					{% if is_following %}
-					<form method="POST" action="{% url 'remove-follower' profile.user.id %}">
-						{% csrf_token %}
-						<button class="btn btn-outline-danger" type=submit>Unfollow</button>
-					</form>
-					{% else %}
-					<form method="POST" action="{% url 'add-follower' profile.user.id %}">
-						{% csrf_token %}
-						<button class="btn btn-outline-success" type=submit>Follow</button>
-					</form>
-					{% endif %}
-				{% endif %}
+<div class="container mt-4">
+    <div class="content-section">
+        <div class="media">
+            <div class="media-body">
+                <div class="user-info">
+                    <img src="{{ user.profile.image.url }}" width="64" height="64" />
+                    <p>{{ profile.name }} - {{ profile.user.username }} ({{ profile.user.email }})</p>
+                </div>
+                <div class="follower-info">
+                    <p>Followers: {{ number_of_followers }}&nbsp;&nbsp;Following: {{ number_of_following }}</p>
+                    {% if profile.user.username != user_login.user.username %}
+                        {% if is_following %}
+                            <form method="POST" action="{% url 'remove-follower' profile.user.id %}">
+                                {% csrf_token %}
+                                <button class="btn btn-outline-danger" type="submit">Unfollow</button>
+                            </form>
+                        {% else %}
+                            <form method="POST" action="{% url 'add-follower' profile.user.id %}">
+                                {% csrf_token %}
+                                <button class="btn btn-outline-success" type="submit">Follow</button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
 
-				{% if is_following or profile.user.username == user_login.user.username %}
-					{% if post_list %}
-						<div class="container">
-							<div class="row">
-								<!-- Blog Entries Column -->
-								<div class="col-md-8 mt-3 left">
-									{% for post in post_list %}
-									<div class="card mb-4">
-										<div class="card-body">
-											<h2 class="card-title">{{ post.title }}</h2>
-											{% if profile.user.username == user_login.user.username %}
-												{% if post.status == 1 %}
-													<p class="card-text text-muted h6">Status: Published </p>
-												{% else %}
-													<p class="card-text text-muted h6">Status: Unpublished </p>
-												{% endif %}
-											{% endif %}
-											<p class="card-text text-muted h6">Created on: {{ post.created_on|date:"D, d F Y H:i:s" }} </p>
-											<p class="card-text text-muted h6">Updated on: {{ post.updated_on|date:"D, d F Y H:i:s" }} </p>
-											<p class="card-text">{{post.content|safe|slice:":100" }}</p>
-											<a href="{% url 'post_detail' post.id  %}" class="btn btn-primary">Read More &rarr;</a>
-										</div>
-									</div>
-									{% endfor %}
-									<nav aria-label="Page navigation conatiner"></nav>
-									<ul class="pagination justify-content-center">
-										{% if post_list.has_previous %}
-										<li class="page-item"><a href="?page={{ post_list.previous_page_number }}" class="page-link"> {{ post_list.previous_page_number }} &laquo; PREV</a></li>
-										{% endif %}
-										<span style="padding-top:7px">&nbsp;&nbsp;Page {{ post_list.number }} of {{ post_list.paginator.num_pages }}.&nbsp;&nbsp;</span>
-										{% if post_list.has_next %}
-										<li class="page-item"><a href="?page={{ post_list.next_page_number }}" class="page-link">NEXT &raquo; {{ post_list.next_page_number }} </a></li>
-										{% endif %}
-									</ul>
-									</nav>
-								</div>
-							</div>
-						</div>
-					{% endif %}
-				{% endif %}
-
-			</div>
-		</div>
-	</div>
+                {% if is_following or profile.user.username == user_login.user.username %}
+                    {% if post_list %}
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-8 mt-3 left">
+                                    {% for post in post_list %}
+                                        <div class="card mb-4">
+                                            <div class="card-body">
+                                                <h2 class="card-title">{{ post.title }}</h2>
+                                                {% if profile.user.username == user_login.user.username %}
+                                                    {% if post.status == 1 %}
+                                                        <p class="card-text text-muted h6">Status: Published</p>
+                                                    {% else %}
+                                                        <p class="card-text text-muted h6">Status: Unpublished</p>
+                                                    {% endif %}
+                                                {% endif %}
+                                                <p class="card-text text-muted h6">Created on: {{ post.created_on|date:"D, d F Y H:i:s" }}</p>
+                                                <p class="card-text text-muted h6">Updated on: {{ post.updated_on|date:"D, d F Y H:i:s" }}</p>
+                                                <p class="card-text">{{ post.content|safe|slice:":100" }}</p>
+                                                <a href="{% url 'post_detail' post.id %}" class="btn btn-primary">Read More &rarr;</a>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    <nav aria-label="Page navigation container"></nav>
+                                    <ul class="pagination justify-content-center">
+                                        {% if post_list.has_previous %}
+                                            <li class="page-item"><a href="?page={{ post_list.previous_page_number }}" class="page-link">{{ post_list.previous_page_number }} &laquo; PREV</a></li>
+                                        {% endif %}
+                                        <span style="padding-top:7px">&nbsp;&nbsp;Page {{ post_list.number }} of {{ post_list.paginator.num_pages }}.&nbsp;&nbsp;</span>
+                                        {% if post_list.has_next %}
+                                            <li class="page-item"><a href="?page={{ post_list.next_page_number }}" class="page-link">NEXT &raquo; {{ post_list.next_page_number }}</a></li>
+                                        {% endif %}
+                                    </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
+<style>
+    .content-section {
+        padding: 20px;
+        background-color: #fdfdfd;
+        border: 1px solid #e3e7eb;
+        box-shadow: 0 16px 48px #e3e7eb;
+        border-radius: 5px;
+    }
+
+    .user-info img {
+        border-radius: 50%;
+    }
+
+    .user-info p {
+        margin-top: 10px;
+    }
+
+    .follower-info p {
+        margin: 10px 0;
+    }
+
+    .btn-outline-danger,
+    .btn-outline-success {
+        margin-top: 10px;
+    }
+</style>
 {% endblock content %}

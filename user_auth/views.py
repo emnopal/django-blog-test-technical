@@ -25,6 +25,8 @@ class RegisterView(View):
             username = form.cleaned_data.get('username')
             messages.success(request, f'Hi {username}! Your account has been created! Now login!')
             return redirect('login')
+        else:
+            return render(request, self.template_name, {'form': form})
 
 
 class CurrentProfileDetailView(AuthDetailViewAbstraction):
@@ -53,6 +55,8 @@ class CurrentProfileDetailView(AuthDetailViewAbstraction):
         p_form = ProfileUpdateForm(instance=request.user.profile)
 
         context = {
+            'user': user,
+            'profile': profile,
             'u_form': u_form,
             'p_form': p_form,
             'user_login': request,

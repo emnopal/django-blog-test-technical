@@ -27,8 +27,8 @@ urlpatterns = [
     path('login', auth_views.LoginView.as_view(template_name="user_auth/login.html"), name='login'),
     re_path(r'accounts/login/?$', auth_views.LoginView.as_view(template_name="user_auth/login.html"), name='login'),
 
-    path('logout', auth_views.LogoutView.as_view(template_name="user_auth/logout.html"), name='logout'),
-    path('accounts/logout', auth_views.LogoutView.as_view(template_name="user_auth/logout.html"), name='logout'),
+    path('logout', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
+    path('accounts/logout', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
 
     re_path(r'^accounts/profile/?$', user_views.CurrentProfileDetailView.as_view(), name='profile'),
     path('profile', user_views.CurrentProfileDetailView.as_view(), name='profile'),

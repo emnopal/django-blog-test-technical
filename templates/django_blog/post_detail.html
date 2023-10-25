@@ -1,69 +1,58 @@
 {% extends "base.html" %} {% block content %} {% load crispy_forms_tags %}
-<div class="container">
-	<article class="media content-section box-content h-50 w-50 p-5 border-1">
-		<div class="media-body">
-			<div class="article-metadata">
-				<h1 class="display-6"><strong>{{ post.title }}</strong></h1>
-				<div>
-					<span>Author: </span>
-					<a
-						class="font-weight-bold mr-2"
-						href="{% url 'account_detail' post.author.username %}"
-						>{{ post.author }}</a
-					>
-				</div>
-				<small class="text-muted"
-					>Created on: &nbsp;{{ post.created_on|date:"D, d F Y H:i:s" }}</small
-				><br/>
-				<small class="text-muted"
-					>Updated on: &nbsp;{{ post.updated_on|date:"D, d F Y H:i:s" }}</small
-				>
-				{% if post.author == user %}
-				<div>
-					<a
-						class="btn btn-secondary btn-sm mt-1 mb-1"
-						href="{% url 'post_update' post.id %}"
-						>Update</a
-					>
-					<a
-						class="btn btn-danger btn-sm mt-1 mb-1"
-						href="{% url 'post_delete' post.id %}"
-						>Delete</a
-					>
-				</div>
-				{% endif %}
-			</div>
-			<div style="padding-top: 10px">
-				<p>{{ post.content|safe }}</p>
-			</div>
+<div class="container mt-4">
+    <article class="media content-section box-content p-4 border rounded">
+        <div class="media-body">
+            <div class="article-metadata">
+                <h1 class="display-4"><strong>{{ post.title }}</strong></h1>
+                <div class="author-info">
+                    <span>Author: </span>
+                    <a class="font-weight-bold author-link" href="{% url 'account_detail' post.author.username %}">
+                        {{ post.author }}
+                    </a>
+                </div>
+                <small class="text-muted created-on">
+                    Created on: {{ post.created_on|date:"D, d F Y H:i:s" }}
+                </small>
+                <br/>
+                <small class="text-muted updated-on">
+                    Updated on: {{ post.updated_on|date:"D, d F Y H:i:s" }}
+                </small>
+                {% if post.author == user %}
+                <div class="author-actions">
+                    <a class="btn btn-secondary btn-sm mt-2" href="{% url 'post_update' post.id %}">Update</a>
+                    <a class="btn btn-danger btn-sm mt-2" href="{% url 'post_delete' post.id %}">Delete</a>
+                </div>
+                {% endif %}
+            </div>
+            <div class="content">
+                <p>{{ post.content|safe }}</p>
+            </div>
 
-			<div>
-				<!-- comments -->
-				<h2>{{ comments.count }} comments</h2>
-				{% for comment in comments %}
-				<div class="comments" style="padding: 10px">
-					<p class="font-weight-bold">
-						{{ comment.name }}
-						<span class="text-muted font-weight-normal">
-							{{ comment.created_on }}
-						</span>
-					</p>
-					{{ comment.body | linebreaks }}
-				</div>
-				{% endfor %}
-			</div>
+            <div class="comments-section">
+                <h2>{{ comments.count }} comments</h2>
+                {% for comment in comments %}
+                <div class="comment" style="padding: 10px">
+                    <p class="font-weight-bold comment-author">
+                        {{ comment.name }}
+                        <span class="text-muted font-weight-normal comment-created-on">
+                            {{ comment.created_on }}
+                        </span>
+                    </p>
+                    {{ comment.body | linebreaks }}
+                </div>
+                {% endfor %}
+            </div>
 
-			<div class="">
-				<h3>Leave a comment</h3>
-				<form method="post" id="submit_comment">
-					{{ comment_form | crispy }} {% csrf_token %}
-					<button type="submit" class="btn btn-primary btn-lg">
-						Submit
-					</button>
-				</form>
-			</div>
-		</div>
-	</article>
+            <div class="comment-form">
+                <h3>Leave a comment</h3>
+                <form method="post" id="submit_comment">
+                    {{ comment_form | crispy }}
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-lg">Submit</button>
+                </form>
+            </div>
+        </div>
+    </article>
 </div>
 
 {% endblock content %}

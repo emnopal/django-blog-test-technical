@@ -15,7 +15,7 @@ services:
     ports:
       - "8044:8000"
     restart: always
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn --bind 0.0.0.0:8000 protergo.asgi:application -k uvicorn.workers.UvicornWorker
     volumes:
       - .:/code
     depends_on:

@@ -6,6 +6,7 @@ import os
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    name = models.CharField(default='')
     image = models.ImageField(default='default.jpg', upload_to='profile_pics')
     followers = models.ManyToManyField(User, blank=True, related_name='followers')
 
@@ -23,3 +24,7 @@ class Profile(models.Model):
             img.save(self.image.path)
             # Remove the original pic
             # os.remove(self.image.path)
+
+        if not self.name or self.name == '':
+            self.name = self.user.username.title()
+            self.save()
