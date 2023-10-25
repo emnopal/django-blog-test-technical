@@ -1,21 +1,27 @@
-version: "3.9"
+version: '3.9'
 
 services:
-
   blog_db:
     image: postgres:14-alpine
     restart: always
     volumes:
       - postgres_data_blog_db:/var/lib/postgresql/data/
     environment:
-      - "POSTGRES_HOST_AUTH_METHOD=trust"
+      - 'POSTGRES_HOST_AUTH_METHOD=trust'
 
   blog_web:
     build: .
     ports:
-      - "8044:8000"
+      - '8044:8000'
     restart: always
-    command: gunicorn --bind 0.0.0.0:8000 protergo.asgi:application -k uvicorn.workers.UvicornWorker
+    command: >
+      sh -c "
+            python manage.py makemigrations --no-input &&
+            python manage.py migrate --no-input &&
+            python manage.py shell < createsuperuser.py &&
+            python manage.py collectstatic --no-input &&
+            gunicorn --bind 0.0.0.0:8000 protergo.asgi:application -k uvicorn.workers.UvicornWorker
+            "
     volumes:
       - .:/code
     depends_on:
